@@ -1,9 +1,9 @@
 <p align="center">
-  <img src="assets/hero_banner.svg" alt="NOICELESS-X Hero Banner" width="100%">
+  <img src="assets/hero_banner.svg" alt="NOISELESS-X6 Hero Banner" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/raghul-cyber/noiceless-X/actions"><img src="https://img.shields.io/badge/build-93%2F93%20passing-00ff88?style=for-the-badge&logo=github-actions&logoColor=white" alt="Build Status"></a>
+  <a href="https://github.com/raghul-cyber/noiseless-X6/actions"><img src="https://img.shields.io/badge/build-93%2F93%20passing-00ff88?style=for-the-badge&logo=github-actions&logoColor=white" alt="Build Status"></a>
   <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-38bdf8?style=for-the-badge&logo=python&logoColor=white" alt="Python Version"></a>
   <a href="https://isocpp.org/"><img src="https://img.shields.io/badge/c%2B%2B-17%20standard-c084fc?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C++17"></a>
   <a href="https://www.raspberrypi.com/"><img src="https://img.shields.io/badge/target-Raspberry%20Pi%204%2F5%20(ARM64)-ff007f?style=for-the-badge&logo=raspberry-pi&logoColor=white" alt="Hardware Target"></a>
@@ -15,11 +15,11 @@
 
 ## ⚡ Executive Summary: The SIH26052 Mission
 
-**NOICELESS-X** is an industrial-grade, hard real-time, dual-microphone speech enhancement and adaptive noise cancellation system engineered specifically for edge computing on **Raspberry Pi 4 / 5 (ARM64, Debian 12)**.
+**NOISELESS-X6** is an industrial-grade, hard real-time, dual-microphone speech enhancement and adaptive noise cancellation system engineered specifically for edge computing on **Raspberry Pi 4 / 5 (ARM64, Debian 12)**.
 
 Traditional deep learning speech enhancement solutions demand GPU clusters and introduce tens to hundreds of milliseconds of algorithmic latency, causing audio packet dropouts, phase distortion, and temporal smearing during abrupt acoustic impulses. Conversely, purely classical adaptive filters (such as NLMS) excel at cancelling stationary noise in sub-millisecond loops but collapse when confronted with complex, non-stationary acoustic environments.
 
-**NOICELESS-X breaks this trade-off via a unified Dual-Path Hybrid Architecture:**
+**NOISELESS-X6 breaks this trade-off via a unified Dual-Path Hybrid Architecture:**
 1. **Classical DSP Path**: Dual-microphone Normalized Least Mean Squares (NLMS) filter operating with sub-millisecond latency ($< 0.12\text{ ms}$) for rapid cancellation of correlated stationary noise.
 2. **Deep Learning Path**: A streaming Complex Convolutional Recurrent Network (**ComplexCRN**) with stateful recurrent memory, generating complex ratio masks ($M_R + jM_I$) to synthesize clean speech spectra in $0.765\text{ ms}$ (INT8).
 3. **Microsecond Impulse Path**: An 8-dimensional physical acoustic feature extractor coupled with **`TinyImpulseMLP`** (305 parameters), classifying violent acoustic transients in $< 5\,\mu\text{s}$ with **100% precision**.
@@ -173,7 +173,7 @@ $$\mathcal{L}_{\text{complex}} = \frac{1}{T \cdot F} \sum_{t,f} \left( |S_R - \h
 
 A critical empirical discovery from our verification suite was that neural ratio masks degrade on violent acoustic transients (e.g., gunshots, door knocks, claps, breaking glass), exhibiting a **$-9.17\text{ dB}$ SI-SNR degradation** due to mask sluggishness and temporal smearing.
 
-To compensate for this, NOICELESS-X implements a dedicated, physical-feature transient detection engine:
+To compensate for this, NOISELESS-X6 implements a dedicated, physical-feature transient detection engine:
 
 #### 8-Dimensional Physical Acoustic Feature Vector
 
@@ -204,7 +204,7 @@ Input (8 Features) ──► BatchNorm1d(8) ──► Linear(8 -> 16) ──► 
 The **Hybrid Fusion Controller** coordinates all three signal paths in real time. It is governed by a 6-state fault-tolerant state machine:
 
 <p align="center">
-  <img src="assets/state_machine.svg" alt="NOICELESS-X State Machine" width="100%">
+  <img src="assets/state_machine.svg" alt="NOISELESS-X6 State Machine" width="100%">
 </p>
 
 #### Dynamic Spectral Blending
