@@ -114,7 +114,7 @@
 
   <!-- Title & Subtitle Banner (Centered) -->
   <g transform="translate(500, 96)" text-anchor="middle">
-    <text class="neon-title" x="0" y="0" font-size="42" fill="url(#title-grad)" filter="url(#glow-cyan)">NOICELESS-X</text>
+    <text class="neon-title" x="0" y="0" font-size="42" fill="url(#title-grad)" filter="url(#glow-cyan)">NOISELESS-X6</text>
     <text x="0" y="24" fill="#94a3b8" font-size="12.5" font-weight="600" letter-spacing="3">
       DUAL-MICROPHONE ADAPTIVE ACOUSTIC SPEECH ENHANCEMENT ENGINE
     </text>
@@ -135,8 +135,7 @@
       <svg x="5" y="5" width="365" height="55" viewBox="0 0 365 55">
         <!-- Seamless repeating waveform translated by exact multiple of wavelength (120px) -->
         <g>
-          <path d="M 0 27 Q 15 -3 30 27 T 60 27 T 75 52 T 90 27 T 105 1 T 120 27 T 135 52 T 150 27 T 165 -3 T 180 27 T 195 52 T 210 27 T 225 1 T 240 27 T 255 52 T 270 27 T 285 -3 T 300 27 T 315 52 T 330 27 T 345 1 T 360 27 T 375 52 T 390 27 T 405 -3 T 420 27 T 435 52 T 450 27 T 465 1 T 480 27 T 495 52 T 510 27" 
-                fill="none" stroke="url(#noisy-grad)" stroke-width="2.2" filter="url(#glow-red)" />
+          <path d="M 0 27 Q 15 -3 30 27 T 60 27 T 75 52 T 90 27 T 105 1 T 120 27 T 135 52 T 150 27 T 165 -3 T 180 27 T 195 52 T 210 27 T 225 1 T 240 27 T 255 52 T 270 27 T 285 -3 T 300 27 T 315 5 T 330 27 T 345 52 T 360 27" fill="none" stroke="url(#noisy-grad)" stroke-width="2.2" filter="url(#glow-red)" />
           <animateTransform attributeName="transform" type="translate" from="0 0" to="-120 0" dur="2s" repeatCount="indefinite" />
         </g>
       </svg>
@@ -153,15 +152,15 @@
       <animate attributeName="r" values="40;48;40" dur="2.4s" repeatCount="indefinite" />
       <animate attributeName="opacity" values="0.5;0.1;0.5" dur="2.4s" repeatCount="indefinite" />
     </circle>
-    
+
     <!-- Rotating Cyber Ring (Native SVG Centered Rotation) -->
     <circle cx="0" cy="0" r="36" fill="none" stroke="#7000ff" stroke-width="2" stroke-dasharray="14 8 6 8">
       <animateTransform attributeName="transform" type="rotate" from="0 0 0" to="360 0 0" dur="10s" repeatCount="indefinite" />
     </circle>
-    
+
     <!-- Core Hub Body -->
     <circle cx="0" cy="0" r="28" fill="#091322" stroke="#00ff88" stroke-width="2" />
-    
+
     <!-- Microchip Waveform Glyph -->
     <path d="M -8 0 L -4 6 L 0 -6 L 4 8 L 8 0" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
     <text x="0" y="-12" text-anchor="middle" fill="#ffffff" font-size="7" font-weight="800">FUSION</text>
@@ -184,8 +183,7 @@
       <svg x="5" y="5" width="365" height="55" viewBox="0 0 365 55">
         <!-- Smooth Clean Harmonic Speech Contours (Seamless 120px loop) -->
         <g>
-          <path d="M 0 27 C 20 7, 40 7, 60 27 C 80 47, 100 47, 120 27 C 140 7, 160 7, 180 27 C 200 47, 220 47, 240 27 C 260 7, 280 7, 300 27 C 320 47, 340 47, 360 27 C 380 7, 400 7, 420 27 C 440 47, 460 47, 480 27 C 500 7, 520 7, 540 27" 
-                fill="none" stroke="url(#clean-grad)" stroke-width="2.6" filter="url(#glow-green)" />
+          <path d="M 0 27 C 20 7, 40 7, 60 27 C 80 47, 100 47, 120 27 C 140 7, 160 7, 180 27 C 200 47, 220 47, 240 27 C 260 7, 280 7, 300 27 C 320 47, 340 47, 360 27 C 380 7, 400 7, 420 27 C 440 47, 460 47, 480 27" fill="none" stroke="url(#clean-grad)" stroke-width="2.6" filter="url(#glow-green)" />
           <animateTransform attributeName="transform" type="translate" from="0 0" to="-120 0" dur="2s" repeatCount="indefinite" />
         </g>
       </svg>
@@ -195,7 +193,7 @@
   <!-- ==================== BOTTOM TELEMETRY TICKER ==================== -->
   <g transform="translate(40, 305)">
     <line x1="0" y1="0" x2="920" y2="0" stroke="#1e2d47" stroke-width="1" />
-    
+
     <g transform="translate(10, 22)">
       <text x="0" y="0" fill="#64748b" font-family="monospace" font-size="10.5">MODEL:</text>
       <text x="50" y="0" fill="#38bdf8" font-family="monospace" font-size="10.5" font-weight="700">ComplexCRN (1.44M Params, INT8 4.16MB)</text>
