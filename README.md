@@ -74,9 +74,9 @@ Traditional deep learning speech enhancement architectures require multi-GPU ser
 
 ### The Three Core Innovations of NOISELESS-X6
 
-1. **Sub-Millisecond Dual-Microphone NLMS Path**: Operating with sub-millisecond response ($< 0.12\text{ ms}$ on ARM NEON SIMD), the classical filter leverages a decorrelated ambient reference microphone to eliminate stationary acoustic interference before neural processing.
+1. **Sub-Millisecond Dual-Microphone NLMS Path**: Operating with sub-millisecond response ($\lt 0.12\text{ ms}$ on ARM NEON SIMD), the classical filter leverages a decorrelated ambient reference microphone to eliminate stationary acoustic interference before neural processing.
 2. **Streaming ComplexCRN Deep Masking Path**: A lightweight 1.44M parameter complex-valued convolutional recurrent network that processes both real and imaginary STFT components ($X_R + jX_I$) to synthesize speech harmonics with stateful recurrent hidden tensors.
-3. **Microsecond TinyImpulseMLP Transient Clamping**: An 8-dimensional physical acoustic feature extractor paired with a 305-parameter neural model classifying violent acoustic shocks (gunshots, knocks, claps) in $< 5\,\mu\text{s}$, engaging a fast-attack ($< 100\,\mu\text{s}$) exponential attenuation envelope.
+3. **Microsecond TinyImpulseMLP Transient Clamping**: An 8-dimensional physical acoustic feature extractor paired with a 305-parameter neural model classifying violent acoustic shocks (gunshots, knocks, claps) in $\lt 5\,\mu\text{s}$, engaging a fast-attack ($\lt 100\,\mu\text{s}$) exponential attenuation envelope.
 4. **Dynamic Hybrid Fusion Controller**: An intelligent 6-state arbitration engine that computes dynamic convex blending $\lambda(t)$ between DSP and deep learning, guaranteeing fail-safe operation even during CPU thermal throttling or microphone failure.
 
 > [!IMPORTANT]
@@ -155,7 +155,7 @@ $$\Delta t_{\text{total}} = \Delta t_{\text{ALSA}} + \max(\Delta t_{\text{NLMS}}
 | **1. ALSA Ring Buffer Fetch (SPSC)** | **0.015 ms** | 0.3% | Zero-copy atomic pointer exchange | 99.7% |
 | **2. Dual-Microphone NLMS Adaptive Filter** | **0.118 ms** | 2.4% | ARM NEON 128-bit vector dot products | 97.6% |
 | **3. 8-D Physical Feature Extraction** | **0.003 ms** | 0.1% | L1 cache resident scalar math | 99.9% |
-| **4. `TinyImpulseMLP` Transient Inference** | **0.002 ms** | < 0.1% | 305 parameters ($< 5\,\mu\text{s}$) | 99.9% |
+| **4. `TinyImpulseMLP` Transient Inference** | **0.002 ms** | < 0.1% | 305 parameters ($\lt 5\,\mu\text{s}$) | 99.9% |
 | **5. ComplexCRN Neural Masking (INT8)** | **0.765 ms** | 15.3% | ONNX Runtime CPU EP / GemmLowp | 84.7% |
 | **6. Hybrid Fusion Controller State Arbitration** | **0.008 ms** | 0.2% | Branchless spectral blending & envelope | 99.8% |
 | **7. iSTFT Overlap-Add Reconstruction** | **0.042 ms** | 0.8% | Pre-computed Hann synthesis table | 99.2% |
@@ -206,7 +206,7 @@ The acoustic acquisition subsystem bridges physical sound pressure waves to high
 3. **Lock-Free SPSC Circular Ring Buffer**:
    - Implemented in C++17 (`embedded/dsp/ring_buffer.hpp`), the buffer uses `std::atomic<size_t>` read and write indices aligned to 64-byte CPU cache lines (`alignas(64)`) to eliminate false sharing.
    - PUSH and POP operations execute in $\mathcal{O}(1)$ without mutex locks or system calls:
-     $$\text{available\_read} = (w_{\text{idx}} - r_{\text{idx}}) \pmod{\text{Capacity}}$$
+     $$\text{AvailableFrames} = (w_{\text{idx}} - r_{\text{idx}}) \pmod{\text{Capacity}}$$
 
 ---
 
@@ -247,7 +247,7 @@ For filter length $L=64$ and reference noise buffer $\mathbf{u}[n] = [d[n], d[n-
 4. **Speech Leakage Mitigation**:
    When the near-field speaker talks, speech energy leaks into the error calculation, threatening to cancel desired speech. NOISELESS-X6 monitors the short-term energy ratio:
    $$\rho[n] = \frac{\sum_{k=0}^{H-1} x^2[n-k]}{\sum_{k=0}^{H-1} d^2[n-k] + \epsilon}$$
-   If $\rho[n] > \rho_{\text{speech\_threshold}}$, the effective step size is attenuated: $\mu[n] \leftarrow \mu_0 \cdot \gamma$, freezing weight adaptation during vocal active periods.
+   If the energy ratio exceeds the speech threshold ($\rho[n] \gt \rho_{\text{th}}$), the effective step size is attenuated: $\mu[n] \leftarrow \mu_0 \cdot \gamma$, freezing weight adaptation during vocal active periods.
 
 ---
 
@@ -360,11 +360,11 @@ The **Hybrid Fusion Controller** coordinates all three paths in real time. It is
 
 | Current State | Trigger Condition | Target State | Signal Blending Behavior | Latency Impact |
 | :--- | :--- | :--- | :--- | :---: |
-| **`NORMAL`** | $P(\text{impulse}) \ge 0.85$ | **`IMPULSE_PROTECT`** | Clamps output via fast-attack attenuation envelope | $< 100\,\mu\text{s}$ attack |
-| **`NORMAL`** | AI Inference $> 5.0\text{ ms}$ | **`DEGRADED`** | Immediate fallback to pure NLMS ($\lambda = 0.0$) | $0.12\text{ ms}$ fallback |
+| **`NORMAL`** | $P(\text{impulse}) \ge 0.85$ | **`IMPULSE_PROTECT`** | Clamps output via fast-attack attenuation envelope | $\lt 100\,\mu\text{s}$ attack |
+| **`NORMAL`** | AI Inference $\gt 5.0\text{ ms}$ | **`DEGRADED`** | Immediate fallback to pure NLMS ($\lambda = 0.0$) | $0.12\text{ ms}$ fallback |
 | **`NORMAL`** | NLMS Weight Divergence | **`NLMS_FAULT`** | Fallback to pure ComplexCRN ($\lambda = 1.0$) | $0.77\text{ ms}$ fallback |
 | **`NORMAL`** | Operator Request | **`BYPASS`** | Zero-latency pass-through of primary mic | Zero computation |
-| **`IMPULSE_PROTECT`** | $P < 0.40$ for 50 frames | **`NORMAL`** | Exponential gain decay recovery: $g(t) \to 1.0$ | Smooth transition |
+| **`IMPULSE_PROTECT`** | $P \lt 0.40$ for 50 frames | **`NORMAL`** | Exponential gain decay recovery: $g(t) \to 1.0$ | Smooth transition |
 | **ANY** | ALSA Disconnect | **`ERROR`** | Safe zero-out audio mute to prevent acoustic pop | Zero audio pop |
 
 #### Dynamic Spectral Blending Formula
@@ -472,9 +472,9 @@ All performance metrics represent **live computed values** executed across held-
 | **3** | **SNR Sweep (-5 to +15dB)** | Clean Energy Preservation | **2.339 (+3.69 dB)** @ +15dB | No clean speech over-suppression | **PASSED** |
 | **4** | **Reverb Condition Check** | Reverberant vs Dry Gap | **+1.53 dB $\Delta$SI-SNR gap** | Acoustic tolerance check | **AUDITED** |
 | **5** | **Generalization Gate** | Speaker & Noise Overlap | **0 leaked speakers, 0 leaked noises** | Strict zero-leakage intersection | **PASSED** |
-| **6** | **Streaming Equivalence** | Batch vs Streaming Difference | **$2.15 \times 10^{-6}$** | Strict threshold $< 1.00 \times 10^{-3}$ | **PASSED** |
+| **6** | **Streaming Equivalence** | Batch vs Streaming Difference | **$2.15 \times 10^{-6}$** | Strict threshold $\lt 1.00 \times 10^{-3}$ | **PASSED** |
 | **7** | **Impulse Verification** | Precision / Spot-Check Acc | **100.0%** / **95.0% (19/20)** | 20 individual clip audit | **PASSED** |
-| **8** | **Real-Time Feasibility** | INT8 CPU Latency / RTF | **0.765 ms** / **0.153x** | Hop Budget 5.000 ms (RTF $< 1.0\text{x}$) | **PASSED** |
+| **8** | **Real-Time Feasibility** | INT8 CPU Latency / RTF | **0.765 ms** / **0.153x** | Hop Budget 5.000 ms (RTF $\lt 1.0\text{x}$) | **PASSED** |
 
 ---
 
