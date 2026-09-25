@@ -1,22 +1,22 @@
-# NOICELESSX — Research Dataset Catalog & Provenance Guide
+# NOISELESS-X6 — Research Dataset Catalog & Provenance Guide
 
-**Project**: SIH26052 NOICELESSX — Active Noise Cancellation & Real-Time Speech Enhancement  
-**Policy**: **Strict Zero-Mock / Zero Arbitrary Web-Scraping Policy**. All speech, noise, and acoustic impulse responses originate from citable, established speech-enhancement research corpora with verified official links, explicit licensing terms, and checksum verification.
+**Project**: SIH26052 NOISELESS-X6 — Active Noise Cancellation & Real-Time Speech Enhancement  
+**Policy**: **Strict Zero-Mock / Zero Arbitrary Web-Scraping Policy**. All speech, noise, and acoustic impulse responses originate from citable, established speech-enhancement research corpora with fully traceable licensing and provenance.
 
 ---
 
 ## 1. Verified Research Datasets
 
-Arbitrary web-scraped audio compromises model generalization, lacks verified SNR references, introduces unknown licensing liabilities, and violates academic reproducibility standards. NOICELESSX utilizes standard, citable research datasets universally recognized in published speech enhancement literature.
+Arbitrary web-scraped audio compromises model generalization, lacks verified SNR references, introduces unknown licensing liabilities, and violates academic reproducibility standards. NOISELESS-X6 uses only datasets with explicit provenance and documented release terms.
 
 ### 1.1 Clean Speech ($s[n]$ in Mixing Equation)
 
 | Dataset | Size | Verified Official Source | Citation / Notes | License |
 | :--- | :--- | :--- | :--- | :--- |
-| **VoiceBank** | 11,572 train / 824 test utterances (28+2 speakers) | [https://datashare.ed.ac.uk/handle/10283/2791](https://datashare.ed.ac.uk/handle/10283/2791) | *Valentini-Botinhao et al., SSW 2016.* Standard speech enhancement benchmark for reporting published PESQ/STOI baselines. | CC BY 4.0 |
-| **VCTK full corpus** | ~44 hours, 110 native speakers | [https://datashare.ed.ac.uk/handle/10283/3443](https://datashare.ed.ac.uk/handle/10283/3443) | *Yamagishi et al., CSTR 2019.* Diverse accents and acoustic characteristics for model generalization. | Open Data Commons (ODC-By) |
-| **LibriSpeech** | 100–460 hours (`train-clean-100` / `train-clean-360`) | [https://www.openslr.org/12](https://www.openslr.org/12) | *Panayotov et al., ICASSP 2015.* Standard large-scale corpus of clean read speech from audiobooks. | CC BY 4.0 |
-| **Microsoft DNS Challenge 5 — clean_fullband** | up to 827 GB (targeted subsample) | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* Multi-language clean speech pool across diverse recording setups. Download via `download-dns-challenge-5-headset-training.sh`. | CC BY-NC 4.0 |
+| **VoiceBank** | 11,572 train / 824 test utterances (28+2 speakers) | [https://datashare.ed.ac.uk/handle/10283/2791](https://datashare.ed.ac.uk/handle/10283/2791) | *Valentini-Botinhao et al., SSWC 2016.* | Permissive academic use |
+| **VCTK full corpus** | ~44 hours, 110 native speakers | [https://datashare.ed.ac.uk/handle/10283/3443](https://datashare.ed.ac.uk/handle/10283/3443) | *Yamagishi et al., CSTR 2019.* Diverse accent coverage | Academic use |
+| **LibriSpeech** | 100–460 hours (`train-clean-100` / `train-clean-360`) | [https://www.openslr.org/12](https://www.openslr.org/12) | *Panayotov et al., ICASSP 2015.* Standard large-scale corpus | CC BY 4.0 |
+| **Microsoft DNS Challenge 5 — clean_fullband** | up to 827 GB (targeted subsample) | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* | Research-use license |
 
 ---
 
@@ -24,13 +24,13 @@ Arbitrary web-scraped audio compromises model generalization, lacks verified SNR
 
 | Dataset | Size | Verified Official Source | Citation / Notes | License |
 | :--- | :--- | :--- | :--- | :--- |
-| **DEMAND** | 18 real-world noise environments (16-channel array) | [https://doi.org/10.5281/zenodo.1227121](https://doi.org/10.5281/zenodo.1227121) | *Thiemann et al., POMA 2013.* Paired with VoiceBank in the canonical VoiceBank+DEMAND benchmark. | CC BY-SA 3.0 |
-| **MUSAN** | ~109 hours (Music, Speech Babble, Technical Noise) | [https://www.openslr.org/17](https://www.openslr.org/17) | *Snyder et al., arXiv:1510.08484, 2015.* Standard speech and audio processing augmentation corpus. | CC0 / Public Domain |
-| **DNS Challenge 5 — noise_fullband** | 58 GB | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* Massive diversity of real-world acoustic noise sourced from AudioSet and Freesound. | CC BY-NC 4.0 |
-| **FSD50K** | 51,197 clips, 200 sound-event classes | [https://zenodo.org/records/4060432](https://zenodo.org/records/4060432) | *Fonseca et al., IEEE/ACM TASLP 2022.* AudioSet ontology sound events covering 200 granular classes. | CC BY 4.0 / Freesound |
-| **ESC-50** | 2,000 clips, 50 environmental classes | [https://github.com/karolpiczak/ESC-50](https://github.com/karolpiczak/ESC-50) | *Piczak, ACM MM 2015.* Cleanly labeled 5-second recordings (glass break, gunshot, clapping) for impulse training. | CC BY-NC 3.0 |
-| **UrbanSound8K** | 8,732 clips, 10 urban classes | [https://urbansounddataset.weebly.com/urbansound8k.html](https://urbansounddataset.weebly.com/urbansound8k.html) | *Salamon et al., ACM MM 2014.* Sirens, drilling, engine idling, and street noise. Requires accepting terms. | CC BY-NC 3.0 |
-| **TAU Urban Acoustic Scenes 2020** | 10 acoustic scenes, ~40 hours | [https://zenodo.org/records/3819968](https://zenodo.org/records/3819968) | *Mesaros et al., DCASE 2020.* Acoustic recordings from 12 European cities (airport, metro, park, street). | CC BY 4.0 |
+| **DEMAND** | 18 real-world noise environments (16-channel array) | [https://doi.org/10.5281/zenodo.1227121](https://doi.org/10.5281/zenodo.1227121) | *Thiemann et al., POMA 2013.* Paired with VoiceBank/VCTK | Open access |
+| **MUSAN** | ~109 hours (Music, Speech Babble, Technical Noise) | [https://www.openslr.org/17](https://www.openslr.org/17) | *Snyder et al., arXiv:1510.08484, 2015.* | OpenSLR release |
+| **DNS Challenge 5 — noise_fullband** | 58 GB | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* Massive diversity of real-world noise | Research-use license |
+| **FSD50K** | 51,197 clips, 200 sound-event classes | [https://zenodo.org/records/4060432](https://zenodo.org/records/4060432) | *Fonseca et al., IEEE/ACM TASLP 2022.* AudioSet ontology sound events | CC BY 4.0 |
+| **ESC-50** | 2,000 clips, 50 environmental classes | [https://github.com/karolpiczak/ESC-50](https://github.com/karolpiczak/ESC-50) | *Piczak, ACM MM 2015.* Cleanly labeled 5-second recordings | CC BY-NC 3.0 |
+| **UrbanSound8K** | 8,732 clips, 10 urban classes | [https://urbansounddataset.weebly.com/urbansound8k.html](https://urbansounddataset.weebly.com/urbansound8k.html) | *Salamon et al., ACM MM 2014.* | Academic use |
+| **TAU Urban Acoustic Scenes 2020** | 10 acoustic scenes, ~40 hours | [https://zenodo.org/records/3819968](https://zenodo.org/records/3819968) | *Mesaros et al., DCASE 2020.* Acoustic recordings | DCASE terms |
 
 ---
 
@@ -38,8 +38,8 @@ Arbitrary web-scraped audio compromises model generalization, lacks verified SNR
 
 | Dataset | Size | Verified Official Source | Citation / Notes | License |
 | :--- | :--- | :--- | :--- | :--- |
-| **RIRS_NOISES (OpenSLR 28)** | Simulated + real RIRs | [https://www.openslr.org/28](https://www.openslr.org/28) | *Ko et al., ICASSP 2017.* Simulated and real room impulse responses with varying RT60 reverberation times. | Apache 2.0 |
-| **DNS Challenge 5 — impulse_responses** | 5.9 GB | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* Real and synthesized room impulse responses covering small, medium, and large rooms. | CC BY-NC 4.0 |
+| **RIRS_NOISES (OpenSLR 28)** | Simulated + real RIRs | [https://www.openslr.org/28](https://www.openslr.org/28) | *Ko et al., ICASSP 2017.* Simulated and real room impulse responses with varying acoustic conditions | OpenSLR |
+| **DNS Challenge 5 — impulse_responses** | 5.9 GB | [https://github.com/microsoft/DNS-Challenge](https://github.com/microsoft/DNS-Challenge) | *Dubey et al., ICASSP 2023.* Real and synthesized room acoustics | Research-use license |
 
 ---
 

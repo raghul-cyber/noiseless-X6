@@ -1,10 +1,10 @@
-# SIH26052 — NOICELESSX: Architecture Documentation (Raspberry Pi 4/5)
+# SIH26052 — NOISELESS-X6: Architecture Documentation (Raspberry Pi 4/5)
 
 ## 1. Executive Summary
 
-**NOICELESSX** is an embedded, real-time dual-microphone speech enhancement and adaptive noise cancellation system designed specifically for the **Raspberry Pi 4 / 5** (64-bit Raspberry Pi OS / Debian 12).
+**NOISELESS-X6** is an embedded, real-time dual-microphone speech enhancement and adaptive noise cancellation system designed specifically for the **Raspberry Pi 4 / 5** (64-bit Raspberry Pi OS / Debian 12).
 
-Originally designed for an NVIDIA Jetson platform with CUDA and TensorRT, this architecture has been adapted to leverage the ARM64 CPU with ARM NEON SIMD extensions using **ONNX Runtime (CPU EP)** with INT8 quantization. The dual-microphone hardware topology enables Normalized Least Mean Squares (NLMS) adaptive filtering to operate in active dual-mic mode by default.
+Originally designed for an NVIDIA Jetson platform with CUDA and TensorRT, this architecture has been adapted to leverage the ARM64 CPU with ARM NEON SIMD extensions using **ONNX Runtime (CPU EP)** and optimized integer inference.
 
 ---
 
@@ -18,22 +18,22 @@ The physical audio pipeline uses two dedicated hardware input microphones and on
                         +-------------------------------------------------+
                                 /                                   \
                  Speech + Ambient Noise                     Acoustic Noise / Residual
-                              /                                       \
-                             v                                         v
-            +-----------------------------------+     +-----------------------------------+
-            |            PRIMARY MIC            |     |           REFERENCE MIC           |
-            |      (Headphone / Headset Mic)    |     |            (Error Mic)            |
-            +-----------------------------------+     +-----------------------------------+
-                             |                                         |
-                             v                                         v
-                      ALSA Capture                              ALSA Capture
-                   (Primary Audio Stream)                   (Reference Noise Stream)
-                             \                                         /
-                              \                                       /
-                               v                                     v
-                        +-------------------------------------------------+
-                        |            Dual-Microphone NLMS Block           |
-                        +-------------------------------------------------+
+                               /                                       \
+                              v                                         v
+             +-----------------------------------+     +-----------------------------------+
+             |            PRIMARY MIC            |     |           REFERENCE MIC           |
+             |      (Headphone / Headset Mic)    |     |            (Error Mic)            |
+             +-----------------------------------+     +-----------------------------------+
+                              |                                         |
+                              v                                         v
+                       ALSA Capture                              ALSA Capture
+                    (Primary Audio Stream)                   (Reference Noise Stream)
+                              \                                         /
+                               \                                       /
+                                v                                     v
+                         +-------------------------------------------------+
+                         |            Dual-Microphone NLMS Block           |
+                         +-------------------------------------------------+
 ```
 
 ### Microphone Roles:
@@ -104,7 +104,7 @@ The audio loop operates at 16 kHz sample rate with a 10 ms frame size (160 sampl
 
 1. **Zero Mocks Policy**:
    - Under no circumstances will production code or hardware validation test suites use `fake_audio()`, `random_noise()`, or synthetic CPU utilization.
-   - The embedded runtime checks ALSA device handles on initialization. If the Primary or Reference mic is disconnected, the engine raises an explicit hardware error and refuses to transition to `READY`.
+   - The embedded runtime checks ALSA device handles on initialization. If the Primary or Reference mic is disconnected, the engine raises an explicit hardware error and refuses to transition to an unsafe state.
 2. **Phase-by-Phase Verification**:
    - Each phase is verified on actual hardware using designated hardware verification scripts/tests before progressing.
 3. **Thermal & Latency Monitoring**:
