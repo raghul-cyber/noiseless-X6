@@ -98,33 +98,33 @@ The animated architectural diagram below illustrates the complete signal flow, p
 ```mermaid
 graph TD
     subgraph INGESTION["1. Hardware Audio Ingestion"]
-        MIC_PRI["Primary Mic: s[n] + v[n]<br/>(Headset / Boom Mic)"] --> ALSA_IN["ALSA Hardware Endpoint (hw:1,0)"]
-        MIC_REF["Reference Mic: d[n]<br/>(Ambient Error Mic)"] --> ALSA_IN
-        ALSA_IN --> SPSC_RING["Lock-Free SPSC Circular Ring Buffers<br/>(Atomic Pointers, 5.0ms Hop / 80 smp)"]
+        MIC_PRI["Primary Mic: Desired Speech + Ambient Noise"] --> ALSA_IN["ALSA Hardware Endpoint (hw:1,0)"]
+        MIC_REF["Reference Mic: Ambient Noise Field"] --> ALSA_IN
+        ALSA_IN --> SPSC_RING["Lock-Free SPSC Circular Ring Buffers (5.0ms Hop)"]
     end
 
     subgraph THREE_PATH["2. Three-Way Parallel Processing Engine"]
-        SPSC_RING -->|Time-Domain u[n]| PATH_NLMS["Path 1: Dual-Mic NLMS Adaptive Filter<br/>w[n+1] = w[n] + (μ / ||u||²) e·u<br/>Latency: &lt; 0.12 ms (ARM NEON)"]
-        SPSC_RING -->|8-D Physical Features| PATH_IMPULSE["Path 2: TinyImpulseMLP Detector<br/>RMS, Flux, Crest, ZCR, Subbands<br/>Latency: &lt; 5 μs (305 Params)"]
-        SPSC_RING -->|Hann Window N=512| STFT_ANA["STFT Analysis (COLA Verified)<br/>Real/Imag Spectrum: X_R + j X_I"]
-        STFT_ANA --> PATH_CRN["Path 3: Streaming ComplexCRN<br/>Complex Conv2D + Paired GRU<br/>INT8 Latency: 0.765 ms (RTF 0.153x)"]
+        SPSC_RING -->|Time-Domain Reference| PATH_NLMS["Path 1: Dual-Mic NLMS Adaptive Filter (Sub-ms Latency)"]
+        SPSC_RING -->|8-D Physical Features| PATH_IMPULSE["Path 2: TinyImpulseMLP Detector (Under 5 microseconds)"]
+        SPSC_RING -->|Hann Window 512 smp| STFT_ANA["STFT Analysis (COLA Verified 257 Complex Bins)"]
+        STFT_ANA --> PATH_CRN["Path 3: Streaming ComplexCRN (0.765 ms INT8)"]
     end
 
     subgraph FUSION_STAGE["3. Dynamic Hybrid Fusion Controller"]
-        PATH_NLMS -->|e_nlms[n]| FUSION_CTRL["Hybrid Fusion Controller (6 States)<br/>S_fused = λ·S_ai + (1-λ)·S_nlms<br/>Transient Clamping: g_floor = 0.05"]
-        PATH_IMPULSE -->|P(impulse)| FUSION_CTRL
-        PATH_CRN -->|S_ai(f)| FUSION_CTRL
+        PATH_NLMS -->|NLMS Error Signal| FUSION_CTRL["Hybrid Fusion Controller (6-State Machine)"]
+        PATH_IMPULSE -->|Impulse Trigger| FUSION_CTRL
+        PATH_CRN -->|Enhanced Spectrum| FUSION_CTRL
     end
 
-    subgraph SYNTHESIS["4. Synthesis & Egress"]
-        FUSION_CTRL --> ISTFT["iSTFT Synthesis (Overlap-Add OLA)<br/>Hann Window N=512, Hop H=80<br/>Reconstruction SNR &gt; 100 dB"]
-        ISTFT --> PLAYBACK["ALSA Playback DAC (hw:1,0)<br/>Enhanced Speech Output y[n]<br/>Zero Audio Overruns (XRUN = 0)"]
+    subgraph SYNTHESIS["4. Synthesis and Egress"]
+        FUSION_CTRL --> ISTFT["iSTFT Synthesis (Overlap-Add OLA)"]
+        ISTFT --> PLAYBACK["ALSA Playback DAC (Enhanced Speech Output)"]
     end
 
-    subgraph TELEMETRY["5. Telemetry & Control"]
-        FUSION_CTRL -.->|Real-Time Stats| IPC_SOCK["Local IPC Socket (127.0.0.1:9099)"]
+    subgraph TELEMETRY["5. Telemetry and Control"]
+        FUSION_CTRL -.->|Real-Time Telemetry| IPC_SOCK["Local IPC Socket (127.0.0.1:9099)"]
         IPC_SOCK --> FASTAPI["FastAPI WebSocket Server (Port 8000)"]
-        FASTAPI --> DASHBOARD["React / Vite Live HUD Dashboard"]
+        FASTAPI --> DASHBOARD["React and Vite Live HUD Dashboard"]
     end
 
     style INGESTION fill:#0b1326,stroke:#00f0ff,stroke-width:1.5px
@@ -220,18 +220,18 @@ sequenceDiagram
     participant Mic as Hardware Mics
     participant NLMS as NLMS Filter (ARM NEON)
     participant Leak as Speech Leakage Guard
-    participant Out as e_nlms Output
+    participant Out as Error Output (e_nlms)
 
-    Mic->>NLMS: Primary Frame x[n] & Reference Frame u[n]
-    NLMS->>NLMS: Compute Filter Output: v_hat[n] = w^T · u[n]
-    NLMS->>Out: Compute Error Signal: e[n] = x[n] - v_hat[n]
-    NLMS->>Leak: Compute Energy Ratio: E_pri / (E_ref + ε)
-    alt Energy Ratio > Speech Threshold
-        Leak->>NLMS: Attenuate Step Size: μ_eff = μ · 0.05
+    Mic->>NLMS: Ingest Primary Frame and Reference Frame
+    NLMS->>NLMS: Compute Filter Output v_hat = dot(w, u)
+    NLMS->>Out: Compute Error Signal e = x - v_hat
+    NLMS->>Leak: Check Primary vs Reference Energy Ratio
+    alt Energy Ratio Exceeds Speech Threshold
+        Leak->>NLMS: Attenuate Step Size to Protect Speech
     else Stationary Noise Dominates
-        Leak->>NLMS: Full Step Size: μ_eff = 0.15
+        Leak->>NLMS: Apply Full Step Size (mu = 0.15)
     end
-    NLMS->>NLMS: Update Weights: w[n+1] = w[n] + (μ_eff / (||u||² + ε)) · e[n] · u[n]
+    NLMS->>NLMS: Update Normalized Weights Vector
 ```
 
 #### Mathematical Formulation
@@ -257,13 +257,13 @@ The spectral transformation engine maps time-domain audio into complex spectral 
 
 ```mermaid
 graph LR
-    PCM_IN["Time Samples x[n]<br/>(80 New + 432 History)"] --> HANN["Symmetric Hann Window<br/>w[n] = 0.5 - 0.5 cos(2πn / N)"]
-    HANN --> FFT["Real FFT (N=512)<br/>F = 257 Complex Bins"]
-    FFT --> COMPLEX_SPEC["Complex Spectrum<br/>X(f, t) = X_R + j X_I"]
-    COMPLEX_SPEC --> MASK_MULT["Complex Ratio Masking<br/>S_hat = M_hat ⊙ X"]
-    MASK_MULT --> IFFT["Inverse FFT (iFFT 512)<br/>Time-Domain Synthesized Frame"]
-    IFFT --> OLA["Overlap-Add (OLA)<br/>Hop H = 80 samples"]
-    OLA --> PCM_OUT["Clean Audio y[n]<br/>SNR > 100 dB (COLA Verified)"]
+    PCM_IN["Time Samples (80 New + 432 History)"] --> HANN["Symmetric Hann Window (N=512)"]
+    HANN --> FFT["Real FFT Analysis (257 Frequency Bins)"]
+    FFT --> COMPLEX_SPEC["Complex Spectrum: Real and Imaginary"]
+    COMPLEX_SPEC --> MASK_MULT["Complex Ratio Masking Multiplier"]
+    MASK_MULT --> IFFT["Inverse FFT Synthesis (512-point iFFT)"]
+    IFFT --> OLA["Overlap-Add Engine (Hop H=80 samples)"]
+    OLA --> PCM_OUT["Clean Audio Output (COLA Verified over 100 dB SNR)"]
 
     style PCM_IN fill:#0f172a,stroke:#00f0ff
     style COMPLEX_SPEC fill:#1e1035,stroke:#a855f7
@@ -286,12 +286,12 @@ A critical empirical discovery from our 8-gate verification audit was that deep 
 
 ```mermaid
 flowchart TD
-    FRAME["Audio Frame (80 Samples)"] --> FEAT["8-D Physical Feature Extractor (&lt; 3 μs)<br/>1. RMS Energy<br/>2. Spectral Flux<br/>3. Crest Factor<br/>4. Zero-Crossing Rate<br/>5-8. Subband Energies (0-1k, 1-2k, 2-4k, 4-8k)"]
-    FEAT --> MLP["TinyImpulseMLP (305 Params, &lt; 2 μs)<br/>Dense(8->16) -> ReLU -> Dense(16->8) -> ReLU -> Dense(8->1) -> Sigmoid"]
-    MLP --> PROB{"Impulse Probability<br/>P(impulse)"}
-    PROB -->|P ≥ 0.85| ATTACK["IMMEDIATE FAST-ATTACK (&lt; 100 μs)<br/>Clamp Gain Floor: g(t) = 0.05 (-26 dB)<br/>Transition to IMPULSE_PROTECT"]
-    PROB -->|P &lt; 0.40 & Held 50 Frames| DECAY["EXPONENTIAL RECOVERY DECAY<br/>g(t) = g(t-1)·α + (1-α)<br/>Return to NORMAL State"]
-    PROB -->|0.40 ≤ P &lt; 0.85| HOLD["HYSTERESIS HOLD<br/>Maintain Current State (No Chattering)"]
+    FRAME["Audio Frame: 80 Samples (5.0 ms)"] --> FEAT["8-D Physical Feature Extractor (3 microseconds)"]
+    FEAT --> MLP["TinyImpulseMLP: 305 Parameters (2 microseconds)"]
+    MLP --> PROB{"Impulse Probability"}
+    PROB -->|P at or above 0.85| ATTACK["Fast Attack Clamping: Gain Floor 0.05"]
+    PROB -->|P below 0.40 for 50 frames| DECAY["Exponential Recovery Decay to Normal"]
+    PROB -->|Hysteresis Intermediate Zone| HOLD["Maintain Current State (No Chattering)"]
 
     style FRAME fill:#0f172a,stroke:#38bdf8
     style FEAT fill:#1c1427,stroke:#f59e0b
