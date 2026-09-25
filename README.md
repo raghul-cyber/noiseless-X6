@@ -1,3 +1,14 @@
+<table width="100%">
+  <tr>
+    <td align="left">
+      <a href="#readme">📖 <b>README</b></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="LICENSE">⚖️ <b>MIT license</b></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="#datasets-license">📜 <b>Datasets license</b></a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="DATASET_LICENSES.md">📄 <b>DATASET_LICENSES.md</b></a>
+    </td>
+  </tr>
+</table>
+
 <p align="center">
   <img src="assets/hero_banner.svg" alt="NOISELESS-X6 Animated Hero Banner" width="100%">
 </p>
@@ -13,10 +24,15 @@
 </p>
 
 <p align="center">
-  <a href="#readme"><img src="https://img.shields.io/badge/%F0%9F%93%96%20README-Project%20Overview-38bdf8?style=for-the-badge" alt="README"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/%E2%9A%96%EF%B8%8F%20MIT%20License-Core%20Software-34d399?style=for-the-badge" alt="MIT License"></a>
-  <a href="docs/DATASET_LICENSES.md"><img src="https://img.shields.io/badge/%F0%9F%93%9C%20Datasets%20License-Academic%20Terms-a855f7?style=for-the-badge" alt="Datasets License"></a>
+  <a href="#readme">📖 <strong>README</strong></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="LICENSE">⚖️ <strong>MIT license</strong></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="#datasets-license">📜 <strong>Datasets license</strong></a>
+  &nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="DATASET_LICENSES.md">📄 <strong>Full Terms (DATASET_LICENSES.md)</strong></a>
 </p>
+
 
 <p align="center">
   <a href="https://github.com/raghul-cyber/noiseless-X6/actions"><img src="https://img.shields.io/badge/build-93%2F93%20passing-00ff88?style=for-the-badge&logo=github-actions&logoColor=white" alt="Build Status"></a>
