@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(SIH26052_NOICELESSX
+project(SIH26052_NOISELESS_X6
     VERSION 0.1.0
     DESCRIPTION "Real-time dual-microphone speech enhancement and adaptive noise cancellation for Raspberry Pi"
     LANGUAGES C CXX
@@ -46,15 +46,15 @@ if(ENABLE_ALSA)
     find_package(ALSA)
     if(ALSA_FOUND)
         message(STATUS "ALSA found: ${ALSA_VERSION_STRING} (Library: ${ALSA_LIBRARIES})")
-        add_compile_definitions(NOICELESSX_HAS_ALSA=1)
+        add_compile_definitions(NOISELESSX_HAS_ALSA=1)
     else()
         message(WARNING "ALSA not found! Audio backend disabled. (Note: Runtime on Raspberry Pi requires real ALSA hardware and refuses READY without it.)")
         set(ENABLE_ALSA OFF)
-        add_compile_definitions(NOICELESSX_HAS_ALSA=0)
+        add_compile_definitions(NOISELESSX_HAS_ALSA=0)
     endif()
 else()
     message(STATUS "ALSA backend disabled by configuration (Dev / Host mode).")
-    add_compile_definitions(NOICELESSX_HAS_ALSA=0)
+    add_compile_definitions(NOISELESSX_HAS_ALSA=0)
 endif()
 
 # ONNX Runtime Configuration
@@ -74,14 +74,14 @@ if(ENABLE_ONNXRUNTIME)
 
     if(ONNXRUNTIME_INCLUDE_DIR AND ONNXRUNTIME_LIB)
         message(STATUS "ONNX Runtime found: ${ONNXRUNTIME_LIB}")
-        add_compile_definitions(NOICELESSX_HAS_ONNXRUNTIME=1)
+        add_compile_definitions(NOISELESSX_HAS_ONNXRUNTIME=1)
     else()
         message(STATUS "ONNX Runtime not found in system paths. Header/interface mode enabled for dev host.")
-        add_compile_definitions(NOICELESSX_HAS_ONNXRUNTIME=0)
+        add_compile_definitions(NOISELESSX_HAS_ONNXRUNTIME=0)
     endif()
 else()
     message(STATUS "ONNX Runtime disabled by configuration.")
-    add_compile_definitions(NOICELESSX_HAS_ONNXRUNTIME=0)
+    add_compile_definitions(NOISELESSX_HAS_ONNXRUNTIME=0)
 endif()
 
 # Include directories
@@ -284,4 +284,3 @@ if(BUILD_TESTS)
     include(GoogleTest)
     gtest_discover_tests(noiselessx_unit_tests)
 endif()
-

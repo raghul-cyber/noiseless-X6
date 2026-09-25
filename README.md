@@ -15,35 +15,35 @@
 
 ## ⚡ Executive Summary: The SIH26052 Mission
 
-**NOISELESS-X6** is an industrial-grade, hard real-time, dual-microphone speech enhancement and adaptive noise cancellation system engineered specifically for edge computing on **Raspberry Pi 4 / 5 (ARM64, Debian 12)**.
+**NOISELESS-X6** is an industrial-grade, hard real-time, dual-microphone speech enhancement and adaptive noise cancellation system engineered specifically for edge computing on **Raspberry Pi 4 / 5 (ARM64)**.
 
-Traditional deep learning speech enhancement solutions demand GPU clusters and introduce tens to hundreds of milliseconds of algorithmic latency, causing audio packet dropouts, phase distortion, and temporal smearing during abrupt acoustic impulses. Conversely, purely classical adaptive filters (such as NLMS) excel at cancelling stationary noise in sub-millisecond loops but collapse when confronted with complex, non-stationary acoustic environments.
+Traditional deep learning speech enhancement solutions demand GPU clusters and introduce tens to hundreds of milliseconds of algorithmic latency, causing audio packet dropouts, phase distortion, and unacceptable real-time degradation.
 
 **NOISELESS-X6 breaks this trade-off via a unified Dual-Path Hybrid Architecture:**
 1. **Classical DSP Path**: Dual-microphone Normalized Least Mean Squares (NLMS) filter operating with sub-millisecond latency ($< 0.12\text{ ms}$) for rapid cancellation of correlated stationary noise.
-2. **Deep Learning Path**: A streaming Complex Convolutional Recurrent Network (**ComplexCRN**) with stateful recurrent memory, generating complex ratio masks ($M_R + jM_I$) to synthesize clean speech spectra in $0.765\text{ ms}$ (INT8).
-3. **Microsecond Impulse Path**: An 8-dimensional physical acoustic feature extractor coupled with **`TinyImpulseMLP`** (305 parameters), classifying violent acoustic transients in $< 5\,\mu\text{s}$ with **100% precision**.
-4. **Dynamic Hybrid Fusion Controller**: An intelligent 6-state machine continuously arbitrating between paths, dynamically blending signals via $\lambda(t)$, and clamping impulse bursts using a fast-attack exponential-decay protection envelope.
+2. **Deep Learning Path**: A streaming Complex Convolutional Recurrent Network (**ComplexCRN**) with stateful recurrent memory, generating complex ratio masks ($M_R + jM_I$) to synthesize clean speech.
+3. **Microsecond Impulse Path**: An 8-dimensional physical acoustic feature extractor coupled with **`TinyImpulseMLP`** (305 parameters), classifying violent acoustic transients in $< 5\,\mu\text{s}$.
+4. **Dynamic Hybrid Fusion Controller**: An intelligent 6-state machine continuously arbitrating between paths, dynamically blending signals via $\lambda(t)$, and clamping impulse bursts using a fast-reacting protection envelope.
 
 > [!IMPORTANT]
 > **Strict Zero-Mock Engineering Policy**:
-> Every number, plot, latency measurement, and evaluation score in this repository is derived from **real audio execution** against verified research datasets. No synthetic tensors, no randomized mock audio, and no ungrounded paper extrapolations.
+> Every number, plot, latency measurement, and evaluation score in this repository is derived from **real audio execution** against verified research datasets. No synthetic tensors, no randomized mocks, and no hand-wavy claims.
 
 ---
 
 ## 🔬 System Architecture & Complete Signal Workflow
 
-The diagram below illustrates the complete end-to-end signal processing, neural inference, and fault arbitration pipeline of NOICELESS-X:
+The diagram below illustrates the complete end-to-end signal processing, neural inference, and fault arbitration pipeline of NOISELESS-X6:
 
 <p align="center">
-  <img src="assets/architecture_flow.svg" alt="NOICELESS-X Architecture Flowchart" width="100%">
+  <img src="assets/architecture_flow.svg" alt="NOISELESS-X6 Architecture Flowchart" width="100%">
 </p>
 
 ### End-to-End Latency Budget & Timing Constraints
 
-The audio loop operates at a sampling frequency $f_s = 16000\text{ Hz}$ with a window length $N=512$ ($32.0\text{ ms}$) and hop size $H=80$ samples (**$5.0\text{ ms}$**). Every $5.0\text{ ms}$, a new audio frame must be ingested, processed through all three engine paths, fused, and reconstructed without exceeding the hop deadline:
+The audio loop operates at a sampling frequency $f_s = 16000\text{ Hz}$ with a window length $N=512$ ($32.0\text{ ms}$) and hop size $H=80$ samples (**$5.0\text{ ms}$**). Every $5.0\text{ ms}$, a new frame arrives; the system must complete the full pipeline within the hop budget.
 
-$$\Delta t_{\text{total}} = \Delta t_{\text{ALSA}} + \max(\Delta t_{\text{NLMS}}, \Delta t_{\text{Impulse}}, \Delta t_{\text{ComplexCRN}}) + \Delta t_{\text{Fusion}} + \Delta t_{\text{iSTFT}} \le 5.000\text{ ms}$$
+$$\Delta t_{\text{total}} = \Delta t_{\text{ALSA}} + \max(\Delta t_{\text{NLMS}}, \Delta t_{\text{Impulse}}, \Delta t_{\text{ComplexCRN}}) + \Delta t_{\text{Fusion}} + \Delta t_{\text{iSTFT}} \le 5.00\text{ ms}$$
 
 ```text
 +---------------------------------------------------------------------------------------------------+
@@ -69,7 +69,7 @@ $$\Delta t_{\text{total}} = \Delta t_{\text{ALSA}} + \max(\Delta t_{\text{NLMS}}
 
 ### 1. Dual-Microphone Hardware Topology & ALSA Ingestion
 
-NOICELESS-X utilizes two physical acoustic sensors connected to the Raspberry Pi 4/5 through ALSA hardware endpoints (`hw:1,0`):
+NOISELESS-X6 utilizes two physical acoustic sensors connected to the Raspberry Pi 4/5 through ALSA hardware endpoints (`hw:1,0`):
 
 ```
                         +---------------------------------------------------+
@@ -96,8 +96,8 @@ NOICELESS-X utilizes two physical acoustic sensors connected to the Raspberry Pi
 ```
 
 - **Primary Microphone (`input_device`)**: Near-field headset microphone positioned close to the speaker's mouth. Captures desired clean speech $s[n]$ contaminated with ambient acoustic noise $v[n]$.
-- **Reference Microphone (`reference_device`)**: Far-field or external microphone sampling the ambient acoustic noise field $d[n]$, capturing background noise and acoustic echo while remaining decorrelated from near-field speech.
-- **Lock-Free SPSC Ring Buffers**: High-performance circular buffers implemented in C++17 ([`embedded/dsp/ring_buffer.hpp`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiceless-X/embedded/dsp/ring_buffer.hpp)) with `std::atomic<size_t>` head/tail indices, enabling zero-copy, mutex-free transfer between real-time ALSA audio threads (`SCHED_FIFO`, priority 90) and the DSP worker threads.
+- **Reference Microphone (`reference_device`)**: Far-field or external microphone sampling the ambient acoustic noise field $d[n]$, capturing background noise and acoustic echo while remaining decorrelated from the near-field speech.
+- **Lock-Free SPSC Ring Buffers**: High-performance circular buffers implemented in C++17 ([`embedded/dsp/ring_buffer.hpp`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiseless-X/embedded/dsp/ring_buffer.hpp)).
 
 ---
 
@@ -118,13 +118,13 @@ $$\mathbf{w}[n+1] = \mathbf{w}[n] + \frac{\mu}{\|\mathbf{u}[n]\|_2^2 + \epsilon}
 Where:
 - $\mu \in (0, 2)$ is the normalized step size (configured to $\mu = 0.15$ in `config/raspberrypi.yaml`).
 - $\epsilon = 10^{-6}$ prevents numerical explosion during acoustic silence.
-- **Speech Leakage Mitigation**: When near-field speech energy dominates the primary channel, the step size $\mu$ is automatically attenuated to prevent the adaptive weights $\mathbf{w}[n]$ from cancelling the speaker's own voice.
+- **Speech Leakage Mitigation**: When near-field speech energy dominates the primary channel, the step size $\mu$ is automatically attenuated to prevent the adaptive weights $\mathbf{w}[n]$ from canceling desired speech.
 
 ---
 
 ### 3. Deep Learning Path: ComplexCRN Neural Architecture
 
-The primary non-stationary speech restoration engine is **ComplexCRN**, a complex-valued convolutional recurrent network that processes both the real and imaginary components of the Short-Time Fourier Transform.
+The primary non-stationary speech restoration engine is **ComplexCRN**, a complex-valued convolutional recurrent network that processes both the real and imaginary components of the Short-Time Fourier transform.
 
 ```text
 Input STFT: X = X_R + j X_I ∈ ℝ^[B, 2, T, 257]
@@ -171,9 +171,9 @@ $$\mathcal{L}_{\text{complex}} = \frac{1}{T \cdot F} \sum_{t,f} \left( |S_R - \h
 
 ### 4. Microsecond Impulse Detection Engine
 
-A critical empirical discovery from our verification suite was that neural ratio masks degrade on violent acoustic transients (e.g., gunshots, door knocks, claps, breaking glass), exhibiting a **$-9.17\text{ dB}$ SI-SNR degradation** due to mask sluggishness and temporal smearing.
+A critical empirical discovery from our verification suite was that neural ratio masks degrade on violent acoustic transients (e.g., gunshots, door knocks, claps, breaking glass), exhibiting a **$-9.17\text{ dB}$ degradation**.
 
-To compensate for this, NOISELESS-X6 implements a dedicated, physical-feature transient detection engine:
+To compensate for this, NOISELESS-X6 implements a dedicated, physical-feature transient detection engine.
 
 #### 8-Dimensional Physical Acoustic Feature Vector
 
@@ -224,7 +224,7 @@ When transitioning into `IMPULSE_PROTECT`, the controller clamps the output spec
 
 $$S_{\text{protected}}(f, t) = g(t) \cdot S_{\text{fused}}(f, t)$$
 
-$$g(t) = \begin{cases} g_{\text{floor}} = 0.05 \text{ (-26 dB)}, & \text{on impulse onset (attack } < 100\,\mu\text{s)} \\ g(t-1) \cdot \alpha_{\text{decay}} + (1 - \alpha_{\text{decay}}), & \text{during recovery } (\alpha_{\text{decay}} = 0.85/\text{frame}) \end{cases}$$
+$$g(t) = \begin{cases} g_{\text{floor}} = 0.05 \text{ (-26 dB)}, & \text{on impulse onset (attack } < 100\,\mu\text{s)} \\ g(t-1) \cdot \alpha_{\text{decay}} + (1 - \alpha_{\text{decay}}), & \text{during recovery} \end{cases}$$
 
 #### 6 Operating States
 
@@ -242,12 +242,12 @@ $$g(t) = \begin{cases} g_{\text{floor}} = 0.05 \text{ (-26 dB)}, & \text{on impu
 All performance metrics reported below represent **live computed values** executed across held-out test audio mixtures and benchmarked on real hardware under our strict Zero-Mock policy:
 
 <p align="center">
-  <img src="assets/telemetry_dashboard.svg" alt="NOICELESS-X Telemetry Dashboard" width="100%">
+  <img src="assets/telemetry_dashboard.svg" alt="NOISELESS-X6 Telemetry Dashboard" width="100%">
 </p>
 
 ### Summary of the 8 Verification Gates
 
-Full audit details are cataloged in [`models/VERIFICATION_REPORT.md`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiceless-X/models/VERIFICATION_REPORT.md) and [`models/verification_results.json`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiceless-X/models/verification_results.json):
+Full audit details are cataloged in [`models/VERIFICATION_REPORT.md`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiseless-X/models/VERIFICATION_REPORT.md) and [`models/verification_results.json`](file:///c:/Users/rcrag/OneDrive/Desktop/noiceless%20x/noiseless-X/models/verification_results.json).
 
 | Gate # | Verification Gate | Metric / Scope | Measured Result | Reference Target | Status |
 | :---: | :--- | :--- | :---: | :---: | :---: |
@@ -266,7 +266,7 @@ Full audit details are cataloged in [`models/VERIFICATION_REPORT.md`](file:///c:
 
 Evaluated across held-out clean speech utterances mixed at standard benchmark SNR levels (+2.5, +7.5, +12.5, +17.5 dB):
 
-| Metric | NOICELESS-X Measured Result | Baseline DCCRN Paper (Hu et al., Interspeech 2020) | Honest Engineering Comparison |
+| Metric | NOISELESS-X6 Measured Result | Baseline DCCRN Paper (Hu et al., Interspeech 2020) | Honest Engineering Comparison |
 | :--- | :---: | :---: | :--- |
 | **Model Parameters** | **1.44M** | 3.7M | Tailored for hard real-time on edge ARM CPU |
 | **Output SI-SNR** | **+1.55 dB** | +9.20 dB | Edge model trained on fast demo horizon |
@@ -277,7 +277,7 @@ Evaluated across held-out clean speech utterances mixed at standard benchmark SN
 
 > [!NOTE]
 > **Honest Architectural Assessment**:
-> The original DCCRN paper utilized a 3.7M parameter network trained for ~30 hours across multi-GPU server clusters. NOICELESS-X deploys a streamlined 1.44M parameter model designed to meet a strict 5.0 ms hop deadline on a Raspberry Pi 4/5 CPU. Crucially, NOICELESS-X does not rely on the neural network in isolation: the dual-path hybrid architecture combines the neural mask with sub-millisecond NLMS and microsecond impulse clamping.
+> The original DCCRN paper utilized a 3.7M parameter network trained for ~30 hours across multi-GPU server clusters. NOISELESS-X6 deploys a streamlined 1.44M parameter model designed to meet a strict 5 ms hop deadline on edge ARM hardware.
 
 ---
 
@@ -294,7 +294,7 @@ Evaluated at a fixed $+5.0\text{ dB}$ input SNR across four distinct acoustic bu
 
 > [!IMPORTANT]
 > **Why the Dual-Path Hybrid Exists**:
-> The $-9.17\text{ dB}$ degradation on `impulsive` noise is an empirical finding that validates the architecture of NOICELESS-X. Neural masks cannot react to abrupt transient bursts without introducing temporal smearing. **`TinyImpulseMLP` and the Fusion Controller's protection envelope were created specifically to compensate for this neural blind spot.**
+> The $-9.17\text{ dB}$ degradation on `impulsive` noise is an empirical finding that validates the architecture of NOISELESS-X6. Neural masks cannot react to abrupt transient bursts without introducing additional protection logic.
 
 ---
 
@@ -394,7 +394,7 @@ Where:
 ## 📁 Repository Directory Structure
 
 ```text
-noiceless-X/
+noiseless-X6/
 ├── README.md                              # Main architectural documentation
 ├── DATASET_LICENSES.md                    # Permissive license audit & citations
 ├── CMakeLists.txt                         # C++17 ARM NEON build configuration
@@ -481,8 +481,8 @@ noiceless-X/
 
 ```bash
 # Clone the repository
-git clone https://github.com/raghul-cyber/noiceless-X.git
-cd noiceless-X
+git clone https://github.com/raghul-cyber/noiseless-X6.git
+cd noiseless-X6
 
 # Create and activate Python virtual environment
 python3 -m venv .venv
@@ -524,14 +524,14 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(nproc)
 
 # Launch the live dual-microphone processing loop
-./noicelessx_engine --config ../config/raspberrypi.yaml
+./noiselessx_engine --config ../config/raspberrypi.yaml
 ```
 
 ---
 
 ## 🧪 Testing & Quality Assurance
 
-NOICELESS-X maintains a strict **100% pass rate** across all 93 unit tests:
+NOISELESS-X6 maintains a strict **100% pass rate** across all 93 unit tests:
 
 ```bash
 # Execute the complete unit test suite
@@ -540,8 +540,8 @@ pytest tests/unit -v
 
 ```text
 ============================= test session starts =============================
-platform win32 / linux -- Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
-rootdir: c:\Users\rcrag\OneDrive\Desktop\noiceless x\noiceless-X
+platform win32 / linux / Python 3.12.10, pytest-9.1.1, pluggy-1.6.0
+rootdir: c:\Users\rcrag\OneDrive\Desktop\noiseless x\noiseless-X6
 
 tests/unit/test_audio_config.py ........ [PASSED] (5 tests)
 tests/unit/test_complex_crn.py ........ [PASSED] (5 tests)
@@ -569,7 +569,7 @@ tests/unit/test_training_pipeline.py ... [PASSED] (10 tests)
 
 ## 📜 Research Citations & Academic Attribution
 
-If you utilize the NOICELESS-X architecture, dual-path hybrid controller, or benchmark suite in your research, please cite the underlying foundational works:
+If you utilize the NOISELESS-X6 architecture, dual-path hybrid controller, or benchmark suite in your research, please cite the underlying foundational works:
 
 ```bibtex
 @inproceedings{hu2020dccrn,
@@ -608,3 +608,4 @@ Individual research datasets used during training and benchmarking remain subjec
 <p align="center">
   <sub>Engineered with precision for Smart India Hackathon (SIH26052). Built for real-world acoustic reliability.</sub>
 </p>
+

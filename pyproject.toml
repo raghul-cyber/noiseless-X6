@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "sih26052-noiselessx"
+name = "sih26052-noiseless-x6"
 version = "0.1.0"
-description = "SIH26052 NOICELESSX - Dual-Mic Speech Enhancement & Adaptive Noise Cancellation on Raspberry Pi"
+description = "SIH26052 NOISELESS-X6 - Dual-Mic Speech Enhancement & Adaptive Noise Cancellation on Raspberry Pi"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
