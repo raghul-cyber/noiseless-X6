@@ -92,24 +92,29 @@
   <!-- Top Badges Ribbon (Evenly spaced & aligned) -->
   <g transform="translate(40, 26)">
     <!-- Real-Time Badge -->
-    <rect x="0" y="0" width="145" height="24" rx="12" fill="#13233a" stroke="#00f0ff" stroke-width="1" />
+    <rect x="0" y="0" width="140" height="24" rx="12" fill="#13233a" stroke="#00f0ff" stroke-width="1" />
     <circle cx="14" cy="12" r="4.5" fill="#00ff88">
       <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
     </circle>
-    <text x="26" y="16" fill="#00f0ff" font-family="monospace" font-size="10" font-weight="700">16 kHz / 5.0ms HOP</text>
+    <text x="25" y="16" fill="#00f0ff" font-family="monospace" font-size="9.5" font-weight="700">16kHz / 5.0ms HOP</text>
 
     <!-- Architecture Badge -->
-    <rect x="160" y="0" width="185" height="24" rx="12" fill="#1b1736" stroke="#7000ff" stroke-width="1" />
-    <text x="172" y="16" fill="#c084fc" font-family="monospace" font-size="10" font-weight="700">DUAL-PATH HYBRID AI+NLMS</text>
+    <rect x="150" y="0" width="180" height="24" rx="12" fill="#1b1736" stroke="#7000ff" stroke-width="1" />
+    <text x="160" y="16" fill="#c084fc" font-family="monospace" font-size="9.5" font-weight="700">HYBRID AI+NLMS DUAL-PATH</text>
 
     <!-- Hardware Badge -->
-    <rect x="360" y="0" width="180" height="24" rx="12" fill="#241424" stroke="#ff007f" stroke-width="1" />
-    <text x="372" y="16" fill="#ff77bb" font-family="monospace" font-size="10" font-weight="700">RASPBERRY PI 4/5 ARM64</text>
+    <rect x="340" y="0" width="175" height="24" rx="12" fill="#241424" stroke="#ff007f" stroke-width="1" />
+    <text x="350" y="16" fill="#ff77bb" font-family="monospace" font-size="9.5" font-weight="700">RASPBERRY PI 4/5 ARM64</text>
+
+    <!-- Datasets License Badge -->
+    <rect x="525" y="0" width="185" height="24" rx="12" fill="#1c1130" stroke="#a855f7" stroke-width="1" />
+    <circle cx="539" cy="12" r="4.5" fill="#a855f7" />
+    <text x="550" y="16" fill="#d8b4fe" font-family="monospace" font-size="9.5" font-weight="700">DATASET LICENSES AUDITED</text>
 
     <!-- Verification Badge -->
-    <rect x="735" y="0" width="185" height="24" rx="12" fill="#0c261e" stroke="#00ff88" stroke-width="1" />
-    <circle cx="749" cy="12" r="4.5" fill="#00ff88" />
-    <text x="760" y="16" fill="#00ff88" font-family="monospace" font-size="10" font-weight="700">100% ZERO-MOCK VALIDATED</text>
+    <rect x="720" y="0" width="200" height="24" rx="12" fill="#0c261e" stroke="#00ff88" stroke-width="1" />
+    <circle cx="734" cy="12" r="4.5" fill="#00ff88" />
+    <text x="745" y="16" fill="#00ff88" font-family="monospace" font-size="9.5" font-weight="700">100% ZERO-MOCK VALIDATED</text>
   </g>
 
   <!-- Title & Subtitle Banner (Centered) -->

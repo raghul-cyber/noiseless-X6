@@ -13,6 +13,12 @@
 </p>
 
 <p align="center">
+  <a href="#readme"><img src="https://img.shields.io/badge/%F0%9F%93%96%20README-Project%20Overview-38bdf8?style=for-the-badge" alt="README"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/%E2%9A%96%EF%B8%8F%20MIT%20License-Core%20Software-34d399?style=for-the-badge" alt="MIT License"></a>
+  <a href="docs/DATASET_LICENSES.md"><img src="https://img.shields.io/badge/%F0%9F%93%9C%20Datasets%20License-Academic%20Terms-a855f7?style=for-the-badge" alt="Datasets License"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/raghul-cyber/noiseless-X6/actions"><img src="https://img.shields.io/badge/build-93%2F93%20passing-00ff88?style=for-the-badge&logo=github-actions&logoColor=white" alt="Build Status"></a>
   <a href="#-hard-real-time-50-ms-hop-budget--latency-timeline"><img src="https://img.shields.io/badge/latency-0.765%20ms%20(INT8)-38bdf8?style=for-the-badge&logo=speedtest&logoColor=white" alt="Inference Latency"></a>
   <a href="#-hard-real-time-50-ms-hop-budget--latency-timeline"><img src="https://img.shields.io/badge/RTF-0.153x%20(6.5x%20Realtime)-00ff88?style=for-the-badge&logo=fastapi&logoColor=white" alt="Real-Time Factor"></a>
@@ -24,6 +30,7 @@
   <a href="https://isocpp.org/"><img src="https://img.shields.io/badge/c%2B%2B-17%20standard-c084fc?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C++17"></a>
   <a href="https://onnxruntime.ai/"><img src="https://img.shields.io/badge/inference-ONNX%20Runtime%20INT8-f59e0b?style=for-the-badge&logo=onnx&logoColor=white" alt="ONNX Runtime"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-34d399?style=for-the-badge" alt="License"></a>
+  <a href="docs/DATASET_LICENSES.md"><img src="https://img.shields.io/badge/datasets%20license-academic%20terms-a855f7?style=for-the-badge&logo=open-access&logoColor=white" alt="Dataset Licenses"></a>
 </p>
 
 ---
@@ -51,6 +58,8 @@
 - [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
 - [📜 Research Citations & Academic Attribution](#-research-citations--academic-attribution)
 - [⚖️ License & Compliance](#️-license--compliance)
+  - [Core Software License (MIT)](#core-software-license)
+  - [Datasets License & Usage Terms](#-datasets-license--usage-terms)
 
 ---
 
@@ -733,8 +742,33 @@ If you utilize the NOISELESS-X6 architecture, dual-path hybrid controller, or be
 
 ## ⚖️ License & Compliance
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for complete details.  
-Individual research datasets used during training and benchmarking remain subject to their respective non-commercial academic licenses cataloged in [`docs/DATASET_LICENSES.md`](docs/DATASET_LICENSES.md).
+### Core Software License
+The NOISELESS-X6 core codebase, runtime C++ engine, Python training pipelines, and custom ONNX models are distributed under the **[MIT License](LICENSE)**. See [`LICENSE`](LICENSE) for complete legal terms.
+
+### 📜 Datasets License & Usage Terms
+<a id="datasets-license"></a><a id="dataset-licenses"></a>
+
+All 11 research audio datasets utilized during acoustic model training, room impulse response (RIR) reverberation modeling, and empirical verification are governed by their respective permissive and academic non-commercial licenses.
+
+Complete dataset terms, attribution requirements, and BibTeX citations are officially documented in **[docs/DATASET_LICENSES.md](docs/DATASET_LICENSES.md)** (also accessible at root **[DATASET_LICENSES.md](DATASET_LICENSES.md)**).
+
+| Dataset | Primary Modality | License | Commercial Use | Attribution Required | Official Source URL |
+| :--- | :--- | :--- | :---: | :---: | :--- |
+| **VoiceBank-DEMAND** | Clean Speech Subcorpus | CC BY 4.0 | Yes | Yes | [Edinburgh DataShare](https://datashare.ed.ac.uk/handle/10283/2791) |
+| **DEMAND Noise Corpus** | 16-ch Acoustic Noise | CC BY-SA 3.0 | Yes | Yes | [Zenodo 1227121](https://doi.org/10.5281/zenodo.1227121) |
+| **VCTK Corpus** | Multi-Speaker Clean Speech | ODC-By v1.0 | Yes | Yes | [DataShare (CSTR)](https://datashare.ed.ac.uk/handle/10283/3443) |
+| **LibriSpeech (train-clean-100)** | Read Audiobooks | CC BY 4.0 | Yes | Yes | [OpenSLR 12](https://www.openslr.org/12/) |
+| **MUSAN** | Music, Babble & Noise | CC0 / Public Domain | Yes | No | [OpenSLR 17](https://www.openslr.org/17/) |
+| **RIRS_NOISES** | Simulated & Real Room RIRs | Apache 2.0 | Yes | Yes | [OpenSLR 28](https://www.openslr.org/28/) |
+| **FSD50K** | Everyday Sound Events | CC BY 4.0 / Freesound | Mixed | Yes | [Zenodo 4060432](https://zenodo.org/records/4060432) |
+| **ESC-50** | Environmental Audio | CC BY-NC 3.0 | **No (Non-Commercial)** | Yes | [GitHub (ESC-50)](https://github.com/karolpiczak/ESC-50) |
+| **UrbanSound8K** | Urban Noise Events | CC BY-NC 3.0 | **No (Non-Commercial)** | Yes (Terms Agreement) | [UrbanSound8K Official](https://urbansounddataset.weebly.com/urbansound8k.html) |
+| **TAU Urban Acoustic Scenes 2020** | Urban Acoustic Scenes | CC BY 4.0 | Yes | Yes | [Zenodo 3819968](https://zenodo.org/records/3819968) |
+| **Microsoft DNS Challenge 5** | Synthetic Speech & Noise | CC BY-NC 4.0 | **No (Non-Commercial)** | Yes | [Microsoft DNS](https://github.com/microsoft/DNS-Challenge) |
+
+> [!IMPORTANT]
+> **Academic & Research Compliance**:
+> Non-commercial datasets (ESC-50, UrbanSound8K, Microsoft DNS) are strictly isolated for offline acoustic research and benchmarking. Deployments intended for proprietary commercial redistribution should train exclusively on the commercial-permissive subset (VoiceBank, DEMAND, VCTK, LibriSpeech, MUSAN, RIRS_NOISES, TAU) as documented in **[docs/DATASET_LICENSES.md](docs/DATASET_LICENSES.md)**.
 
 <p align="center">
   <sub>Engineered with mathematical precision for Smart India Hackathon (SIH26052). Built for real-world acoustic reliability.</sub>

@@ -1,6 +1,6 @@
-# SIH26052 — NOICELESSX: Dataset Licenses, Attribution & Usage Terms
+# SIH26052 — NOISELESS-X6: Dataset Licenses, Attribution & Usage Terms
 
-This document provides official licensing terms, citations, and compliance requirements for all research audio datasets utilized by the NOICELESSX speech enhancement and acoustic telemetry engine.
+This document provides official licensing terms, citations, and compliance requirements for all research audio datasets utilized by the NOISELESS-X6 speech enhancement and acoustic telemetry engine.
 
 ---
 
