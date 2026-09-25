@@ -1,4 +1,4 @@
-﻿annotated-doc==0.0.5
+annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1
 ast_serialize==0.11.0
@@ -48,7 +48,7 @@ pytokens==0.4.1
 PyYAML==6.0.3
 scipy==1.18.1
 setuptools==84.0.0
--e git+https://github.com/raghul-cyber/noiceless-X.git@97395da3f230f07a1a52f94a98d12c3632ea5e00#egg=sih26052_noiselessx
+-e git+https://github.com/raghul-cyber/noiseless-X6.git#egg=sih26052_noiselessx
 soundfile==0.14.0
 starlette==1.6.0
 sympy==1.14.0

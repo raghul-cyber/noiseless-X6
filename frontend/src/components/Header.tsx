@@ -52,7 +52,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', background: 'linear-gradient(90deg, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                NOICELESSX
+                NOISELESS-X6
               </h1>
               <span style={{ fontSize: '0.65rem', padding: '2px 6px', borderRadius: '4px', background: 'rgba(255, 255, 255, 0.08)', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 SIH26052

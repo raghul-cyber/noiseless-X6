@@ -56,8 +56,8 @@
 
   <!-- Header -->
   <g transform="translate(30, 32)">
-    <text x="0" y="0" fill="#38bdf8" font-size="16" font-weight="900" letter-spacing="1">REAL EMPIRICAL TELEMETRY DASHBOARD</text>
-    <text x="360" y="0" fill="#64748b" font-size="11" font-family="monospace">Zero Estimations • 100% Live In-Circuit Audio Verification</text>
+    <text x="0" y="0" fill="#38bdf8" font-size="16" font-weight="900" letter-spacing="1">NOISELESS-X6: EMPIRICAL TELEMETRY DASHBOARD</text>
+    <text x="420" y="0" fill="#64748b" font-size="11" font-family="monospace">Zero Estimations • 100% Live In-Circuit Audio Verification</text>
   </g>
 
   <!-- ==================== 4 METRIC CARDS (PERFECTLY BALANCED) ==================== -->

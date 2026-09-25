@@ -1,5 +1,5 @@
 /**
- * Telemetry and System Models for NOICELESSX Operator Dashboard.
+ * Telemetry and System Models for NOISELESS-X6 Operator Dashboard.
  * Maps 1:1 with backend Pydantic schemas.
  */
 
